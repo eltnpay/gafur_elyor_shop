@@ -1,0 +1,143 @@
+{% load static %} 
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Магазин - Список продуктов</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <!-- Логотип -->
+                <div class="logo">
+                    <a href="/">Магазин</a>
+                </div>
+
+                <!-- Поиск -->
+                <div class="search-box">
+                    <form action="/search/" method="GET">
+                        <input type="text" name="q" placeholder="Поиск товаров..." class="search-input">
+                        <button type="submit" class="search-btn">
+                            <span>🔍</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Навигация и действия -->
+                <div class="header-actions">
+                    <!-- Переключатель темы -->
+                    <button class="theme-toggle" id="themeToggle">
+                        <span class="theme-icon">🌙</span>
+                    </button>
+
+                    <!-- Корзина -->
+                    <a href="/cart/" class="cart-btn">
+                        <span class="cart-icon">🛒</span>
+                        <span class="cart-count">0</span>
+                    </a>
+
+                    <!-- Гамбургер меню -->
+                    <button class="hamburger" id="hamburgerBtn">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Мобильное меню -->
+        <nav class="mobile-menu" id="mobileMenu">
+            <ul>
+                <li><a href="/products/">Продукты</a></li>
+                <li><a href="/about/">О нас</a></li>
+                <li><a href="/complaint/">Жалоба</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="main-content">
+        <div class="container">
+            <h1>Список продуктов</h1>
+
+            {% if products %}
+                <div class="products-grid">
+                    {% for product in products %}
+                    <div class="product-card">
+                        <!-- Изображение -->
+                        <div class="product-image">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" alt="{{ product.title }}">
+                            {% else %}
+                                <img src="{% static 'images/no-image.png' %}" alt="Нет изображения">
+                            {% endif %}
+                        </div>
+
+                        <!-- Информация о продукте -->
+                        <div class="product-info">
+                            <!-- Категория и бренд -->
+                            <div class="product-meta">
+                                <span class="category">{{ product.category.name }}</span>
+                                <span class="brand">{{ product.brand.name }}</span>
+                            </div>
+
+                            <!-- Название -->
+                            <h3 class="product-title">{{ product.title }}</h3>
+
+                            <!-- Описание -->
+                            <p class="product-description">{{ product.description|truncatewords:20 }}</p>
+
+                            <!-- Страна производителя -->
+                            {% if product.brand.country %}
+                            <p class="product-country">Страна: {{ product.brand.country }}</p>
+                            {% endif %}
+
+                            <!-- Цена и наличие -->
+                            <div class="product-footer">
+                                <div class="price-section">
+                                    <span class="price">{{ product.price }} сум</span>
+                                    <span class="stock {% if product.in_stock > 0 %}in-stock{% else %}out-of-stock{% endif %}">
+                                        {% if product.in_stock > 0 %}
+                                            В наличии: {{ product.in_stock }} шт.
+                                        {% else %}
+                                            Нет в наличии
+                                        {% endif %}
+                                    </span>
+                                </div>
+
+                                <!-- Кнопка в корзину -->
+                                <button class="add-to-cart-btn" data-product-id="{{ product.id }}" {% if product.in_stock == 0 %}disabled{% endif %}>
+                                    {% if product.in_stock > 0 %}
+                                        В корзину
+                                    {% else %}
+                                        Недоступно
+                                    {% endif %}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="no-products">
+                    <p>Продуктов пока нет</p>
+                </div>
+            {% endif %}
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Магазин. Все права защищены.</p>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>
